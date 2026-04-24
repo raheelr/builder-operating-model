@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Builder Operating Model — How Best Practices from Across the Industry Become One Coherent System</title>
+<style>
+  :root {
+    --header-bg: #1a1a2e;
+    --header-text: #b8b8d0;
+    --content-bg: #fafafa;
+    --content-max: 900px;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --text-muted: #8888a0;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --border: #e2e2ea;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --teal: #0891b2;
+    --teal-light: #ecfeff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+    background: var(--content-bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--header-bg);
+    color: #fff;
+    padding: 56px 40px 48px;
+    text-align: center;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    border: 1px solid rgba(79, 70, 229, 0.4);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    max-width: 720px;
+    margin: 0 auto 16px;
+  }
+
+  .header-subtitle {
+    font-size: 16px;
+    color: var(--header-text);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .header-meta {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--header-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .header-meta span {
+    margin: 0 12px;
+  }
+
+  .header-meta .sep {
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ===== CONTENT WRAPPER ===== */
+  .content-wrap {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+
+  .toc-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .toc ol {
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+
+  .toc ol li {
+    counter-increment: toc-counter;
+    margin-bottom: 8px;
+  }
+
+  .toc ol li a {
+    display: flex;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 4px 0;
+    transition: color 0.15s;
+  }
+
+  .toc ol li a:hover {
+    color: var(--accent);
+  }
+
+  .toc ol li a::before {
+    content: counter(toc-counter) ".";
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 28px;
+    font-size: 13px;
+  }
+
+  /* ===== SECTION HEADINGS ===== */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-number {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 32px 0 12px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 24px 0 8px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+  }
+
+  strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* ===== CALLOUT BOXES ===== */
+  .callout {
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-left: 4px solid;
+  }
+
+  .callout-insight {
+    background: var(--accent-light);
+    border-color: var(--accent);
+  }
+
+  .callout-key {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+
+  .callout-important {
+    background: var(--orange-light);
+    border-color: var(--orange);
+  }
+
+  .callout-purple {
+    background: var(--purple-light);
+    border-color: var(--purple);
+  }
+
+  .callout-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .callout p {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ===== TABLES ===== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  thead {
+    background: var(--header-bg);
+    color: #fff;
+  }
+
+  thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:nth-child(even) {
+    background: rgba(0,0,0,0.015);
+  }
+
+  tbody tr:hover {
+    background: var(--accent-light);
+  }
+
+  td:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  /* Source map table - capability column */
+  .source-map td:first-child {
+    min-width: 160px;
+  }
+
+  .source-map td:nth-child(2) {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  /* Comparison table */
+  .comparison-table td:first-child {
+    min-width: 140px;
+    white-space: normal;
+  }
+
+  .comparison-table thead th:first-child {
+    width: 140px;
+  }
+
+  .check { color: var(--green); }
+  .partial { color: var(--orange); }
+
+  /* ===== CODE BLOCKS ===== */
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    position: relative;
+    margin: 32px 0;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--purple), var(--green));
+    border-radius: 1px;
+  }
+
+  .timeline-phase {
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  .timeline-phase:last-child {
+    margin-bottom: 0;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid;
+    background: #fff;
+  }
+
+  .timeline-dot.phase-0 { border-color: var(--accent); }
+  .timeline-dot.phase-1 { border-color: var(--blue); }
+  .timeline-dot.phase-2 { border-color: var(--purple); }
+  .timeline-dot.phase-4 { border-color: var(--teal); }
+  .timeline-dot.phase-8 { border-color: var(--green); }
+
+  .timeline-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .timeline-label.phase-0 { background: var(--accent-light); color: var(--accent); }
+  .timeline-label.phase-1 { background: var(--blue-light); color: var(--blue); }
+  .timeline-label.phase-2 { background: var(--purple-light); color: var(--purple); }
+  .timeline-label.phase-4 { background: var(--teal-light); color: var(--teal); }
+  .timeline-label.phase-8 { background: var(--green-light); color: var(--green); }
+
+  .timeline-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .timeline-content {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+
+  .timeline-content p {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .timeline-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .timeline-cmd {
+    display: inline-block;
+    background: var(--code-bg);
+    color: var(--code-text);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 0;
+  }
+
+  .timeline-stat {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin: 2px 4px 2px 0;
+  }
+
+  .timeline-stat.green { background: var(--green-light); color: var(--green); }
+  .timeline-stat.purple { background: var(--purple-light); color: var(--purple); }
+  .timeline-stat.orange { background: var(--orange-light); color: var(--orange); }
+
+  /* ===== LAYERS DIAGRAM ===== */
+  .layers {
+    margin: 32px 0;
+  }
+
+  .layer-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .layer-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+  }
+
+  .layer-card.layer-reasoning::before { background: var(--accent); }
+  .layer-card.layer-execution::before { background: var(--purple); }
+  .layer-card.layer-verification::before { background: var(--green); }
+  .layer-card.layer-guardrails::before { background: var(--orange); }
+
+  .layer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .layer-number {
+    font-size: 11px;
+    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .layer-reasoning .layer-number { background: var(--accent); }
+  .layer-execution .layer-number { background: var(--purple); }
+  .layer-verification .layer-number { background: var(--green); }
+  .layer-guardrails .layer-number { background: var(--orange); }
+
+  .layer-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .layer-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .layer-capabilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .layer-cap {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .layer-reasoning .layer-cap { background: var(--accent-light); color: var(--accent); }
+  .layer-execution .layer-cap { background: var(--purple-light); color: var(--purple); }
+  .layer-verification .layer-cap { background: var(--green-light); color: var(--green); }
+  .layer-guardrails .layer-cap { background: var(--orange-light); color: var(--orange); }
+
+  .layer-sources {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  .layer-sources strong {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+  }
+
+  /* ===== FEATURE LIST ===== */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .feature-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .feature-item h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .feature-item p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ===== BULLET LISTS ===== */
+  ul, ol {
+    margin: 12px 0 16px 24px;
+    color: var(--text-secondary);
+  }
+
+  li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .footer-brand {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .footer-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ===== CONNECTOR ARROW ===== */
+  .connector {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 20px;
+    margin: -4px 0 12px;
+    user-select: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 700px) {
+    .header { padding: 40px 20px 36px; }
+    .header h1 { font-size: 24px; }
+    .content-wrap { padding: 32px 16px 60px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .timeline { padding-left: 32px; }
+    table { font-size: 12px; }
+    thead th, tbody td { padding: 10px 10px; }
+  }
+
+  @media print {
+    .header { padding: 32px 20px; }
+    .content-wrap { max-width: 100%; padding: 20px; }
+    .timeline::before { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="header-badge">Internal Whitepaper</div>
+  <h1>The Builder Operating Model</h1>
+  <p class="header-subtitle">How Best Practices from Across the Autonomous Coding Landscape Become One Coherent System</p>
+  <div class="header-meta">
+    <span>Productive Edge</span>
+    <span class="sep">|</span>
+    <span>Builder Operating Model v1</span>
+    <span class="sep">|</span>
+    <span>April 2026</span>
+  </div>
+</header>
+
+<!-- ===== CONTENT ===== -->
+<main class="content-wrap">
+
+  <!-- TABLE OF CONTENTS -->
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#source-map">The Source Map</a></li>
+      <li><a href="#coherence">Why It's Coherent, Not a Hodgepodge</a></li>
+      <li><a href="#walkthrough">How It Works Holistically &mdash; A Production System Walkthrough</a></li>
+      <li><a href="#original">What's Original to the Builder</a></li>
+      <li><a href="#landscape">The Competitive Landscape</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+    </ol>
+  </nav>
+
+  <!-- ===== SECTION 1: INTRODUCTION ===== -->
+  <section class="section" id="introduction">
+    <div class="section-number">Section 1</div>
+    <h2>Introduction</h2>
+
+    <p>The Builder Operating Model didn't emerge in a vacuum. It synthesizes the strongest patterns from the autonomous coding landscape &mdash; tested across real tools, validated by production use, and integrated into a system where every piece reinforces every other piece.</p>
+
+    <p>Over the past year, the industry has converged on a set of hard-won lessons about how AI agents should build software. Specifications must precede code. Reviews must be independent. Guardrails must be enforced mechanically, not on the honor system. Context windows must be managed deliberately. Testing must be driven by the spec, not the implementation.</p>
+
+    <p>Different teams discovered different subsets of these truths. CodevOS built a multi-model review pipeline. Superpowers enforced TDD discipline and two-stage verification. BMAD developed adversarial review and structured upstream methodology. The PE AI Way introduced independent testing and reconciliation. Carl Tierney articulated the philosophy that <em>"the harness is the product &mdash; the model is just the engine."</em></p>
+
+    <p>The Builder Operating Model draws from all of them. But it isn't a feature matrix or a best-of compilation. It's an <strong>integrated system</strong> where reasoning feeds execution, execution feeds verification, verification feeds the guardrails, and the guardrails feed back into everything.</p>
+
+    <div class="callout callout-key">
+      <div class="callout-title">Why This Paper Exists</div>
+      <p>This paper maps each capability to its source, explains how it was adapted for the Builder, and demonstrates why the whole is greater than the sum of its parts. It's written for the PE team &mdash; the people who will use this methodology every day to build production systems for clients.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2: SOURCE MAP ===== -->
+  <section class="section" id="source-map">
+    <div class="section-number">Section 2</div>
+    <h2>The Source Map</h2>
+
+    <p>Every capability in the Builder Operating Model has a lineage. The table below maps each one to its primary source, what we learned from that source, and how we adapted it for the Builder. This is the centerpiece of the paper &mdash; the full provenance of the system.</p>
+
+    <div class="table-wrap">
+      <table class="source-map">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Primary Source</th>
+            <th>What We Learned</th>
+            <th>How We Adapted It</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Spec-driven pipeline</td>
+            <td>Industry consensus (Thoughtworks, BMAD, cc-sdd, GitHub Spec Kit)</td>
+            <td>Specification must define external behavior, not just be a PRD</td>
+            <td>Deep init path with 6-phase structured reasoning. Specs emerge from problem exploration, not forms.</td>
+          </tr>
+          <tr>
+            <td>Multi-model review</td>
+            <td>CodevOS (Cluesmith)</td>
+            <td>No single model catches &gt;55% of bugs when reviewing its own work</td>
+            <td>Fresh independent agent reviews every diff. Building and reviewing never same session.</td>
+          </tr>
+          <tr>
+            <td>Adversarial review</td>
+            <td>BMAD Method</td>
+            <td>Normal review has confirmation bias. Force the reviewer to find problems.</td>
+            <td>Optional mode for high-risk code. Zero findings requires justification.</td>
+          </tr>
+          <tr>
+            <td>Two-stage review</td>
+            <td>Superpowers</td>
+            <td>Separating "right thing?" from "thing right?" catches different bugs</td>
+            <td>Pass 1: spec compliance. Pass 2: code quality. Findings organized by pass.</td>
+          </tr>
+          <tr>
+            <td>TDD enforcement</td>
+            <td>Superpowers</td>
+            <td>Code written before tests = tests that validate the implementation, not the spec</td>
+            <td>Opt-in Red-Green-Refactor. Agent must demonstrate the Red phase.</td>
+          </tr>
+          <tr>
+            <td>Checkpoint preview</td>
+            <td>BMAD Method</td>
+            <td>Raw diffs in file order force mental reconstruction of intent</td>
+            <td>Comprehension-ordered walkthrough: orientation, by-concern, risk tags, testing.</td>
+          </tr>
+          <tr>
+            <td>Context recovery</td>
+            <td>CodevOS</td>
+            <td>Agents exhaust context windows. Without checkpoints, work is lost.</td>
+            <td><code>.claude/checkpoints/&lt;task-id&gt;.yaml</code> with completed steps, files, decisions.</td>
+          </tr>
+          <tr>
+            <td>Protocol enforcement</td>
+            <td>CodevOS (Porch)</td>
+            <td>Honor system fails. Deterministic state machines prevent skipping steps.</td>
+            <td>4 enforced gates + Claude Code hooks for mechanical enforcement.</td>
+          </tr>
+          <tr>
+            <td>Hooks as enforcement</td>
+            <td>Spec-Driven Pipelines analysis</td>
+            <td>Claude Code hooks transform advisory rules into deterministic gates</td>
+            <td>PreToolUse (scope), PostToolUse (lint), Stop (state doc) hooks.</td>
+          </tr>
+          <tr>
+            <td>Advanced elicitation</td>
+            <td>BMAD Method</td>
+            <td>"Try again" is vague. Named reasoning methods force specific lenses.</td>
+            <td>Pre-mortem, First Principles, Red Team, Inversion, Socratic, Constraint Removal.</td>
+          </tr>
+          <tr>
+            <td>Adversarial/independent testing</td>
+            <td>PE AI Way</td>
+            <td>Test from the spec, not the code. The validator never reads the implementation.</td>
+            <td>Testing agent receives spec + acceptance criteria, NOT source code.</td>
+          </tr>
+          <tr>
+            <td>Reconciliation</td>
+            <td>PE AI Way (Reconciler)</td>
+            <td>Review checks quality. Reconciliation checks completeness. Different concerns.</td>
+            <td>Post-build completeness report: AC-1 &#10003;, AC-2 &#10007;, scope drift check.</td>
+          </tr>
+          <tr>
+            <td>Bounded autonomy</td>
+            <td>Anthropic research + Spec-Driven Pipelines</td>
+            <td>Only 0-20% of tasks can be fully delegated. Classify by risk.</td>
+            <td>4 tiers: auto-safe, standard, high-scrutiny, builder-only.</td>
+          </tr>
+          <tr>
+            <td>Self-improvement loop</td>
+            <td>Carl Tierney ("Building the Harness")</td>
+            <td>"The harness is the product. The model is the engine." Corrections become rules.</td>
+            <td>Detect pattern &rarr; propose rule &rarr; builder approves &rarr; permanent improvement.</td>
+          </tr>
+          <tr>
+            <td>Guardrail library</td>
+            <td>PE team + Agent OS (/inject-standards)</td>
+            <td>Organizations accumulate tech-specific knowledge that should transfer across projects</td>
+            <td>Shared library of stack-specific rule modules. Projects inherit by tech stack.</td>
+          </tr>
+          <tr>
+            <td>Fresh context per task</td>
+            <td>GSD, Superpowers</td>
+            <td>Context rot degrades quality. Fresh windows per task = consistent quality.</td>
+            <td>Fresh subagent per task + context recovery if exhausted.</td>
+          </tr>
+          <tr>
+            <td>80/20 spec ratio</td>
+            <td>PE AI Way</td>
+            <td>Front-load specification. Building is cheap. Rework is expensive.</td>
+            <td>Deep init path IS the 80%. Structured reasoning before a line of code.</td>
+          </tr>
+          <tr>
+            <td>Planning sessions</td>
+            <td>Original (Builder model)</td>
+            <td>Module-level backlog grooming prevents drift and surfaces dependencies</td>
+            <td>5-activity structure: load, groom, capture, map dependencies, cross-module check.</td>
+          </tr>
+          <tr>
+            <td>IDEAS gate</td>
+            <td>Original (Builder model)</td>
+            <td>Unplanned features are the #1 source of scope creep</td>
+            <td>All new features go through IDEAS.md evaluation before entering roadmap.</td>
+          </tr>
+          <tr>
+            <td>Reshape</td>
+            <td>Original (Builder model)</td>
+            <td>Module boundaries need to evolve as understanding deepens</td>
+            <td>Re-propose modules without losing in-flight work. Tasks remapped, not deleted.</td>
+          </tr>
+          <tr>
+            <td>Scout Team bridge</td>
+            <td>Original (PE methodology)</td>
+            <td>Discovery and development should co-evolve, not waterfall</td>
+            <td>Bidirectional sync + feedback loop. Working software on Day 1.</td>
+          </tr>
+          <tr>
+            <td>Evidence-based review</td>
+            <td>Carl Tierney</td>
+            <td>"It should work" is not evidence. Builder must see proof.</td>
+            <td>Test output, API responses, screenshots, DB queries. Proof, not promises.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Reading the Source Map</div>
+      <p><strong>22 capabilities. 8+ sources. Zero orphans.</strong> Every row connects to other rows &mdash; multi-model review composes with adversarial review, which composes with two-stage review, which feeds checkpoint preview. The source map shows provenance; Section 3 shows integration.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3: COHERENCE ===== -->
+  <section class="section" id="coherence">
+    <div class="section-number">Section 3</div>
+    <h2>Why It's Coherent, Not a Hodgepodge</h2>
+
+    <p>Fifty-plus capabilities from eight-plus sources could easily become a feature zoo &mdash; impressive on a slide, incoherent in practice. The Builder avoids this because the capabilities organize into three architectural layers, connected by adaptive guardrails that run through all of them.</p>
+
+    <h3>The Three Layers</h3>
+
+    <div class="layers">
+      <div class="layer-card layer-reasoning">
+        <div class="layer-header">
+          <div class="layer-number">1</div>
+          <div>
+            <div class="layer-name">Reasoning</div>
+            <div class="layer-subtitle">Before code exists</div>
+          </div>
+        </div>
+        <p>Deep init, advanced elicitation, architecture discussions, ADRs, security discussions, readiness check. These produce a project whose every decision is traceable to structured thinking about the real problem.</p>
+        <div class="layer-capabilities">
+          <span class="layer-cap">Deep Init</span>
+          <span class="layer-cap">Advanced Elicitation</span>
+          <span class="layer-cap">ADRs</span>
+          <span class="layer-cap">Architecture Discussions</span>
+          <span class="layer-cap">Security Discussions</span>
+          <span class="layer-cap">Readiness Check</span>
+          <span class="layer-cap">80/20 Spec Ratio</span>
+        </div>
+        <div class="layer-sources"><strong>Draws from:</strong> BMAD's upstream methodology, PE AI Way's 80/20 principle, CodevOS's spec-driven philosophy</div>
+      </div>
+
+      <div class="connector">&#9660;</div>
+
+      <div class="layer-card layer-execution">
+        <div class="layer-header">
+          <div class="layer-number">2</div>
+          <div>
+            <div class="layer-name">Execution</div>
+            <div class="layer-subtitle">Building the code</div>
+          </div>
+        </div>
+        <p>8 modes, parallel worktrees, TDD mode, bounded autonomy, context recovery, scout sync. The builder orchestrates; agents execute within defined boundaries.</p>
+        <div class="layer-capabilities">
+          <span class="layer-cap">8 Builder Modes</span>
+          <span class="layer-cap">Parallel Worktrees</span>
+          <span class="layer-cap">TDD Mode</span>
+          <span class="layer-cap">Bounded Autonomy</span>
+          <span class="layer-cap">Context Recovery</span>
+          <span class="layer-cap">Scout Sync</span>
+          <span class="layer-cap">Fresh Context per Task</span>
+        </div>
+        <div class="layer-sources"><strong>Draws from:</strong> Superpowers' enforcement discipline, CodevOS's Agent Farm, GSD's fresh-context-per-task, Builder's module/agent decomposition</div>
+      </div>
+
+      <div class="connector">&#9660;</div>
+
+      <div class="layer-card layer-verification">
+        <div class="layer-header">
+          <div class="layer-number">3</div>
+          <div>
+            <div class="layer-name">Verification</div>
+            <div class="layer-subtitle">Proving it works</div>
+          </div>
+        </div>
+        <p>Multi-model review, two-stage review, adversarial review, checkpoint preview, reconciliation, spec-driven testing, quality gates, hooks enforcement. Every piece of work is verified from multiple angles before the builder sees it.</p>
+        <div class="layer-capabilities">
+          <span class="layer-cap">Multi-Model Review</span>
+          <span class="layer-cap">Two-Stage Review</span>
+          <span class="layer-cap">Adversarial Review</span>
+          <span class="layer-cap">Checkpoint Preview</span>
+          <span class="layer-cap">Reconciliation</span>
+          <span class="layer-cap">Spec-Driven Testing</span>
+          <span class="layer-cap">Quality Gates</span>
+          <span class="layer-cap">Evidence-Based Review</span>
+        </div>
+        <div class="layer-sources"><strong>Draws from:</strong> CodevOS's multi-model consultation, BMAD's adversarial review, PE AI Way's Reconciler/Pre-Reviewer/independent testing, Superpowers' verification-before-completion</div>
+      </div>
+
+      <div class="connector">&#8635;</div>
+
+      <div class="layer-card layer-guardrails">
+        <div class="layer-header">
+          <div class="layer-number">&#8734;</div>
+          <div>
+            <div class="layer-name">Adaptive Guardrails</div>
+            <div class="layer-subtitle">The connective tissue &mdash; runs through all three layers</div>
+          </div>
+        </div>
+        <p>File-pattern rules constrain execution. Self-improvement captures corrections from verification and feeds them back. The guardrail library shares knowledge across projects. Guardrails are what make the system compound in value over time &mdash; not just within a project, but across the organization.</p>
+        <div class="layer-capabilities">
+          <span class="layer-cap">File-Pattern Rules</span>
+          <span class="layer-cap">Self-Improvement Loop</span>
+          <span class="layer-cap">Guardrail Library</span>
+          <span class="layer-cap">Hooks Enforcement</span>
+          <span class="layer-cap">Protocol Enforcement</span>
+        </div>
+        <div class="layer-sources"><strong>Draws from:</strong> Carl Tierney's harness philosophy, CodevOS's Porch state machine, PE team's stack-specific guardrails, Agent OS /inject-standards</div>
+      </div>
+    </div>
+
+    <h3>Why It Hangs Together</h3>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">Five Principles of Integration</div>
+      <p><strong>1. Every capability has a ROLE.</strong> It exists to solve a specific problem in the pipeline. There are no "nice to have" features bolted on for completeness.</p>
+      <p><strong>2. Capabilities COMPOSE.</strong> Multi-model review + adversarial review + two-stage review + checkpoint preview aren't four separate tools &mdash; they're four layers of the same review process.</p>
+      <p><strong>3. The builder is the integration point.</strong> All capabilities flow through a human making judgment calls. The builder doesn't need to understand every agent's internals &mdash; they evaluate outputs through structured presentations.</p>
+      <p><strong>4. The guardrails are the learning loop.</strong> Corrections anywhere in the system become permanent improvements everywhere. This is how the system gets smarter, not just per-project but per-organization.</p>
+      <p><strong>5. Shared state docs are the coordination mechanism.</strong> Agents don't talk to each other. They talk through docs &mdash; ROADMAP.md, CURRENT_STATE.md, checkpoints, ADRs. This makes the system inspectable and debuggable by the builder at any point.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 4: WALKTHROUGH ===== -->
+  <section class="section" id="walkthrough">
+    <div class="section-number">Section 4</div>
+    <h2>How It Works Holistically &mdash; A Production System Walkthrough</h2>
+
+    <p>Feature lists describe what a system <em>has</em>. This section shows what a system <em>does</em>. We walk through a real engagement &mdash; building a production system &mdash; showing how all the capabilities work together. Not feature-by-feature, but as an integrated system.</p>
+
+    <div class="timeline">
+      <!-- WEEK 0 -->
+      <div class="timeline-phase">
+        <div class="timeline-dot phase-0"></div>
+        <span class="timeline-label phase-0">Week 0</span>
+        <div class="timeline-title">Foundation</div>
+        <div class="timeline-content">
+          <p><span class="timeline-cmd">/builder init</span> (deep path) &mdash; 2 hours of structured reasoning with the client's domain expert. The builder doesn't ask "what do you want?" &mdash; the system guides the conversation through problem exploration, constraint mapping, stakeholder identification, and architecture reasoning.</p>
+          <p><strong>Advanced elicitation:</strong> Pre-mortem on the architecture &mdash; "Assume we fail in 6 months. What went wrong?" Three ADRs emerge from the reasoning session, documenting decisions before a line of code exists.</p>
+          <p><span class="timeline-cmd">/builder guardrails inherit dotnet-core,azure-services,hipaa-compliance</span> &mdash; <span class="timeline-stat">35 stack-specific rules</span> inherited from the organizational guardrail library.</p>
+          <p><span class="timeline-cmd">/builder ready-check</span> &mdash; Green. Architecture, roadmap, security, guardrails all coherent. The system confirms the project is ready to build.</p>
+          <p>Meanwhile, the <strong>Scout Team</strong> runs its first discovery session in parallel &mdash; 10 agents analyzing source documents, extracting workflows, surfacing contradictions.</p>
+        </div>
+      </div>
+
+      <!-- WEEK 1 -->
+      <div class="timeline-phase">
+        <div class="timeline-dot phase-1"></div>
+        <span class="timeline-label phase-1">Week 1</span>
+        <div class="timeline-title">First Build Cycle</div>
+        <div class="timeline-content">
+          <p><span class="timeline-cmd">/builder sync</span> &mdash; absorb scout findings. Narrative briefing read and understood. Two new requirements surfaced from discovery are integrated into the roadmap.</p>
+          <p><span class="timeline-cmd">/builder advance</span> &mdash; 3 tasks spawned in parallel worktrees. <strong>Bounded autonomy</strong> classifies each: <span class="timeline-stat">1 auto-safe</span> (docs setup), <span class="timeline-stat purple">2 standard</span> (API endpoint, business logic).</p>
+          <p>The business logic agent uses <strong>TDD mode</strong> for quote calculation. Red-Green-Refactor cycle produces <span class="timeline-stat green">12 tests</span>, each demonstrating the Red phase before implementation.</p>
+          <p>Agent completes &rarr; <strong>hooks enforce</strong> automatically: linter runs (PostToolUse), CURRENT_STATE.md check (Stop hook), scope validation (PreToolUse prevented one out-of-scope file edit).</p>
+          <p><strong>Build-verify gate:</strong> all tests pass &rarr; review unlocked.</p>
+          <p><strong>Multi-model review:</strong> fresh agent reviews independently (never saw the build session).</p>
+          <p><strong>Two-stage review:</strong> Pass 1 checks spec compliance &#10003;. Pass 2 checks code quality: 1 finding &mdash; missing input validation on a currency field.</p>
+          <p>Builder reviews with <strong>checkpoint preview:</strong> comprehension-ordered walkthrough shows orientation first, then changes by concern, with risk tags on the auth code.</p>
+          <p>Merge. <strong>Self-improvement</strong> proposes a guardrail rule from the input validation correction. Builder approves. <span class="timeline-stat orange">Guardrail rule #8 created.</span></p>
+        </div>
+      </div>
+
+      <!-- WEEK 2 -->
+      <div class="timeline-phase">
+        <div class="timeline-dot phase-2"></div>
+        <span class="timeline-label phase-2">Week 2</span>
+        <div class="timeline-title">The System Compounds</div>
+        <div class="timeline-content">
+          <p><span class="timeline-stat">Guardrails: 12 rules</span> (6 inherited + 4 from init + 2 from corrections). Each rule prevents future instances of a past mistake.</p>
+          <p><strong>Planning session</strong> surfaces a dependency between the notification module and the user preferences module that the builder had missed. The 5-activity structure catches it: load context, groom tasks, capture new work, map dependencies, cross-module check.</p>
+          <p><strong>Scout feedback:</strong> 2 implementation gaps sent back to discovery. The bridge is bidirectional &mdash; building informs discovery, not just the other way around.</p>
+          <p>Phase 1 complete &rarr; <strong>reconciliation:</strong> <span class="timeline-stat green">4/5 acceptance criteria met</span>, <span class="timeline-stat orange">1 deferred to Phase 2</span>. The reconciliation caught that AC-3 was partially implemented &mdash; the review had marked it as complete.</p>
+          <p><strong>Ready for testing</strong> checklist surfaces. Builder tests functionally against the spec. Evidence collected: test output, API response screenshots, database query results.</p>
+          <p><strong>Retrospective</strong> captures 3 lessons. One becomes a guardrail rule.</p>
+        </div>
+      </div>
+
+      <!-- WEEK 4 -->
+      <div class="timeline-phase">
+        <div class="timeline-dot phase-4"></div>
+        <span class="timeline-label phase-4">Week 4</span>
+        <div class="timeline-title">Scale</div>
+        <div class="timeline-content">
+          <p>3 agents running in parallel. <strong>Bounded autonomy</strong> handles the routine. The builder focuses on the 2 high-scrutiny tasks &mdash; payment processing and PII handling &mdash; with <strong>adversarial review</strong> enabled. Zero findings on the payment module requires written justification from the reviewer.</p>
+          <p><span class="timeline-stat">Guardrails: 18 rules</span>. Corrections are rare now &mdash; agents produce code matching the project's conventions on first attempt. The self-improvement loop is working.</p>
+          <p>A requirement changes mid-build. <span class="timeline-cmd">/builder correct-course</span> &mdash; architecture revalidated, roadmap adjusted, readiness re-checked, ADR written for the change rationale. Continue.</p>
+          <p>An <strong>IDEAS gate</strong> catches a drive-by feature request from a stakeholder. The idea is captured in IDEAS.md for evaluation rather than immediately entering the roadmap.</p>
+        </div>
+      </div>
+
+      <!-- WEEK 8 -->
+      <div class="timeline-phase">
+        <div class="timeline-dot phase-8"></div>
+        <span class="timeline-label phase-8">Week 8</span>
+        <div class="timeline-title">Production</div>
+        <div class="timeline-content">
+          <p><span class="timeline-stat green">Guardrails: 24 rules</span> (6 inherited stack rules + 18 project-specific). Each one a permanent lesson that makes every future session better.</p>
+          <p><span class="timeline-stat">ADRs: 11</span> &mdash; every significant decision documented with full reasoning. New team members can understand not just <em>what</em> was built, but <em>why</em>.</p>
+          <p>The <strong>testing agent</strong> has verified <span class="timeline-stat green">187 acceptance criteria</span> against specs, not code. It never saw the implementation &mdash; it tested from the specification.</p>
+          <p><strong>Reconciliation</strong> confirms: 100% of specified acceptance criteria implemented. Zero scope drift. The reconciliation report is the proof.</p>
+          <p><strong>Security discussion</strong> revisited &rarr; audit passed. The pre-mortem from Week 0 prevented the architecture mistake that would have caused the audit to fail.</p>
+          <p><span class="timeline-cmd">/builder guardrails contribute multi-tenant-isolation</span> &mdash; the best project rule proposed back to the shared library for future projects across the organization.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-key">
+      <div class="callout-title">The Compounding Effect</div>
+      <p>Week 1's input validation correction became a permanent guardrail rule. The inherited stack guardrails prevented <strong>35 convention violations that never even happened</strong>. The reconciliation caught a missing acceptance criterion the review didn't. The multi-model review caught a security issue the building agent missed. The advanced elicitation in Week 0 prevented an architecture mistake that would have cost 2 weeks of rework.</p>
+      <p><strong>No single capability does this. The SYSTEM does this.</strong></p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5: ORIGINAL ===== -->
+  <section class="section" id="original">
+    <div class="section-number">Section 5</div>
+    <h2>What's Original to the Builder</h2>
+
+    <p>Not everything was borrowed. The Builder Operating Model introduced several capabilities that don't exist in any of the source frameworks. These are the innovations that emerged from applying agent-assisted development to real client engagements.</p>
+
+    <div class="feature-grid">
+      <div class="feature-item">
+        <h4>Two-Mode Init</h4>
+        <p>No other framework offers structured problem reasoning as an alternative to "tell me what to build." The deep init path guides exploration before specification.</p>
+      </div>
+      <div class="feature-item">
+        <h4>IDEAS Gate</h4>
+        <p>Explicit idea-to-roadmap evaluation. All new features go through IDEAS.md before entering the roadmap. No drive-by features.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Reshape</h4>
+        <p>Evolving module boundaries without losing in-flight work. Tasks are remapped, not deleted. Understanding deepens; the system adapts.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Planning Sessions (5-Activity)</h4>
+        <p>Structured module-level backlog grooming: load, groom, capture, map dependencies, cross-module check. Prevents drift and surfaces hidden dependencies.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Scout Team Bridge</h4>
+        <p>Bidirectional discovery-to-build loop. Working software on Day 1. Building informs discovery; discovery informs building.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Correct Course</h4>
+        <p>Mid-build requirements revalidation with architecture coherence check. Requirements change; the system handles it gracefully.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Builder Modes (8 Canonical)</h4>
+        <p>Eight named session types with explicit contracts: advance, status, triage, planning, review, delta, retrospective, reason. Each mode has a defined purpose and output.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Self-Improvement Visibility</h4>
+        <p>Metrics on the guardrails' effectiveness over time. Track how many corrections become rules, how many violations the rules prevent, and where the system is still learning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6: COMPETITIVE LANDSCAPE ===== -->
+  <section class="section" id="landscape">
+    <div class="section-number">Section 6</div>
+    <h2>The Competitive Landscape</h2>
+
+    <p>How the Builder compares to the tools and frameworks it learned from. This isn't a feature-for-feature checklist &mdash; it's a comparison of <strong>architectural approaches</strong> across the dimensions that matter for production systems.</p>
+
+    <div class="table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Builder</th>
+            <th>CodevOS</th>
+            <th>BMAD</th>
+            <th>Superpowers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reasoning / Planning</td>
+            <td>Deep init + reason mode + ADRs + advanced elicitation</td>
+            <td>Spec writing</td>
+            <td>4-phase (Analysis &rarr; Planning &rarr; Solutioning &rarr; Implementation)</td>
+            <td>Brainstorming</td>
+          </tr>
+          <tr>
+            <td>Agent Orchestration</td>
+            <td>Self-configuring agents + bounded autonomy</td>
+            <td>Architect-Builder with Agent Farm</td>
+            <td>12+ specialized personas</td>
+            <td>Fresh subagent per task</td>
+          </tr>
+          <tr>
+            <td>Review</td>
+            <td>Multi-model + adversarial + two-stage + checkpoint preview + reconciliation</td>
+            <td>Multi-model consultation (3 models)</td>
+            <td>Adversarial review + validation workflows</td>
+            <td>Two-stage (spec + quality)</td>
+          </tr>
+          <tr>
+            <td>Guardrails</td>
+            <td>Adaptive (self-improving) + shared library</td>
+            <td>lessons-learned.md (manual)</td>
+            <td>project-context.md</td>
+            <td>TDD enforcement</td>
+          </tr>
+          <tr>
+            <td>Discovery Integration</td>
+            <td>Scout Team bridge (bidirectional)</td>
+            <td>None</td>
+            <td>Analysis phase</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Self-Improvement</td>
+            <td>Corrections &rarr; rules &rarr; permanent. Organizational library.</td>
+            <td>Manual lessons capture</td>
+            <td>Retrospective</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Enforcement</td>
+            <td>Quality gates + Claude Code hooks</td>
+            <td>Porch (state machine)</td>
+            <td>Validation workflows</td>
+            <td>Verification before completion</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">The Key Differentiator</div>
+      <p>Every framework in this table does something well. CodevOS pioneered multi-model review. BMAD built the most thorough upstream methodology. Superpowers enforced the strictest build discipline. The Builder's differentiator isn't that it does any one thing better &mdash; it's that <strong>all the capabilities are integrated into a single coherent system</strong> with adaptive guardrails that compound in value over time and across projects.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7: CONCLUSION ===== -->
+  <section class="section" id="conclusion">
+    <div class="section-number">Section 7</div>
+    <h2>Conclusion</h2>
+
+    <p>The Builder Operating Model is not a collection of features bolted together. It's a coherent system where reasoning feeds execution, execution feeds verification, verification feeds the guardrails, and the guardrails feed back into everything. Every capability has a role. Every role connects to every other role through shared state, the builder's judgment, and the adaptive guardrails.</p>
+
+    <p>The sources are diverse &mdash; CodevOS, Superpowers, BMAD, the PE AI Way, Carl Tierney, Anthropic's research, and original innovation. But the integration is singular. The Builder is one system, not eight tools taped together.</p>
+
+    <p>For the team: <strong>this is how we build production systems.</strong> Not with hope, not with vibe coding, not with a single clever prompt. With structured reasoning, parallel execution, multi-layer verification, and guardrails that make the system permanently smarter every session.</p>
+
+    <div class="callout callout-important">
+      <div class="callout-title">The Bottom Line</div>
+      <p>The industry figured out the pieces. We figured out how to make them one machine. Every correction makes the system smarter. Every project makes the library richer. Every engagement compounds the advantage.</p>
+      <p>The Builder Operating Model isn't a methodology you follow &mdash; it's a system that learns.</p>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-brand">Builder Operating Model</div>
+    <div class="footer-sub">Productive Edge &mdash; Internal Whitepaper &mdash; April 2026</div>
+  </footer>
+
+</main>
+</body>
+</html>
