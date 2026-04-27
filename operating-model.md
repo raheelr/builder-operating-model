@@ -577,6 +577,7 @@ Security principles that every project should follow. These are not optional har
 3. **The `review` mode includes security checks:** no hardcoded secrets, dependencies scanned, auth properly implemented, input validation present. These are part of the standard review contract, not a separate security review.
 4. **Security is a canonical module concern.** Each module's planning session should include "what are the security implications of this module's work?" — not as a checkbox, but as a genuine question about data access, trust boundaries, and attack surface.
 5. **For healthcare/financial clients:** compliance requirements (HIPAA, SOC2, PCI) are architecture principles, not afterthoughts. They constrain every design decision from Day 1 — data storage, access logging, encryption, audit trails. If you discover compliance requirements mid-build, that's a planning failure.
+6. **The Lethal Trifecta:** When three conditions occur together — **private data + untrusted content + external action** — you have a critical security boundary that must be architecturally separated, not handled by a single agent. A single component that reads private data, processes external/untrusted input, and takes real-world actions (API calls, emails, writes) is a prompt injection attack vector waiting to be exploited. The architectural fix: split the Reader from the Actor. The Reader accesses private data and produces a sanitized, scoped payload. The Actor takes external actions but never touches raw private data or unvalidated external content. No shared context. No exceptions. Any architecture review that identifies the Trifecta in a single component must propose the separation before approving the design.
 
 ## Code Quality
 
@@ -588,6 +589,7 @@ Quality gates that apply to every `review` mode session. These are the minimum b
 4. **CURRENT_STATE.md is updated in the same commit as the code.** If the capability changed, the doc changes. If the doc didn't change, either the work wasn't meaningful or the update was forgotten — both are problems.
 5. **The interlock deliverable still works after the merge.** Regression check: the thing that proves the current phase works must still work after the new code lands. If it doesn't, the merge is rejected until the regression is fixed.
 6. **Security scan passes (if configured).** If the project has dependency scanning, static analysis, or security linting configured, those checks must pass before merge.
+7. **Deterministic checks run before any LLM review.** Build, test, lint, and typecheck first — every time, without exception. LLM review tokens are expensive and slow; deterministic checks are cheap and instant. A review agent that reads a diff that doesn't compile, fails tests, or triggers lint errors is wasting cycles. The pipeline is: `build → test → lint → typecheck` → only then → LLM review. If any deterministic check fails, the LLM review gate does not open. This is not optional hardening — it is the sequence.
 
 ### Not vibe coding
 
@@ -790,6 +792,24 @@ The testing agent tests against the **specification**, not the code. It does not
 
 This is the principle: **"Separate the builder from the validator."** The agent that writes the code never validates its own work. Different context, different prompt, different objective.
 
+### Verifiability Spectrum
+
+Not all acceptance criteria are equally verifiable. Understanding which tier each AC falls into determines how automated testing can cover it — and where human judgment is irreplaceable.
+
+**Tier 1 — Machine-checkable:** A computer can verify this with complete reliability. No human judgment required. These are the best ACs: binary, reproducible, fast.
+- Examples: API returns 200 with correct schema. Field is required. Login redirects to /dashboard. Value persists after page reload.
+- Testing agent handles these automatically.
+
+**Tier 2 — Expert criteria:** A subject-matter expert can verify this reliably, but it requires domain knowledge or contextual judgment that a machine cannot apply.
+- Examples: The claims summary reads naturally and is medically accurate. The audit log contains all required fields per HIPAA. The error message is clear and actionable.
+- Testing agent flags these for human review; it cannot validate them alone.
+
+**Tier 3 — Human judgment:** Requires direct stakeholder or end-user evaluation. No reliable systematic test exists.
+- Examples: "The interface feels intuitive." "The wording matches our brand voice." "This flow makes sense to a claims adjudicator."
+- These are user acceptance criteria, not engineering criteria. They require demos and walkthroughs, not automated tests.
+
+**Goal:** When writing specs, push ACs as far toward Tier 1 as possible. If an AC is Tier 3, ask: can it be broken into sub-criteria, some of which are Tier 1 or 2? "The interface is intuitive" is not a testable AC. "The claims form completes in fewer than 4 clicks from the dashboard" is Tier 1. Reformulating Tier 3 criteria into Tier 1/2 equivalents is part of the `spec` and `spec-harden` process.
+
 **"Ready for Testing" prompt.** When a phase's tasks are complete, the system surfaces a concise testing checklist — what to test, where to click, what to expect:
 
 ```
@@ -874,6 +894,26 @@ Self-improvement visibility surfaces this data:
 - During `/builder retrospective`, include a full guardrail analysis.
 
 **Why this matters:** Without visibility, the builder can't tell if the guardrails are working. With visibility, they can see the compounding effect — and it reinforces the discipline of approving rules when corrections happen.
+
+### Monthly Harness Review
+
+Once a month, the builder reviews the harness itself — not a specific project, not a specific phase, but the methodology, the agents, and the rules as a system. This is a pattern review, not an incident review.
+
+**The key input: raw traces, not summaries.** Summaries flatten nuance. Raw traces (actual conversation transcripts, actual agent outputs, actual corrections made) surface the specific moments where the methodology failed or where agents produced unexpected results. Review 5-10 raw traces from the past month, not a compiled summary.
+
+**Why raw traces:** In multi-model consultation systems, reviewing raw traces instead of summaries produces substantially better improvement signal. Summaries say "the agent sometimes gets the auth model wrong." Raw traces show exactly which prompt patterns trigger the failure, what the agent said, how the builder corrected it, and whether that correction became a rule. The difference between a summary and a trace is the difference between a fire report and a fire investigation.
+
+**The five review questions:**
+
+1. **Where did agents guess?** Find moments where an agent made a judgment call without a spec, without an architecture principle, without a rule to follow. These are gaps in the harness — not agent failures.
+2. **Where did the builder correct the same thing twice?** Repeated corrections = a rule that wasn't created. Create it now.
+3. **Where did review mode miss something the builder caught?** The review agent's prompt or checklist needs updating.
+4. **Where did agents work autonomously and correctly for the longest stretch?** That's what good harness coverage looks like. What made it work? Can it be extended?
+5. **Where did the Verifiability Spectrum break down?** ACs that were supposed to be Tier 1 but required human interpretation. Specs that were too vague for the testing agent to act on.
+
+**Output:** 3-5 new rules proposed. 1-2 agent prompts revised. 0-1 methodology changes (these should be rare — the methodology is the stable layer).
+
+**Cadence:** Monthly. Not weekly (too much overhead) and not quarterly (too much drift accumulates). The goal is permanent system improvement, not catching up after a bad quarter.
 
 ## TDD Mode
 

@@ -388,6 +388,7 @@ Commands that invoke **conversations to shape or evolve foundational docs.** Unl
 /builder reshape              # Re-propose modules when understanding evolves
 /builder system-map           # Create or update the big-picture map of all system rocks
 /builder spec <rock>          # Create or update the detailed spec for one rock
+/builder spec-harden <rock>   # Pressure-test a completed spec before building begins
 ```
 
 **`architecture`** — guided conversation about principles, layers, boundaries, tech stack, patterns. Produces or updates `docs/ARCHITECTURE.md`. Use at init and whenever the architectural understanding deepens.
@@ -405,6 +406,8 @@ Commands that invoke **conversations to shape or evolve foundational docs.** Unl
 **`system-map`** — creates or updates `docs/SYSTEM_MAP.md`, the single orientation document for the whole system. SYSTEM_MAP is the **index above all other docs** — not a roadmap, not ARCHITECTURE, not CURRENT_STATE. It answers: "what are the major pieces of this system, what state is each one in, who owns it, and which decisions govern it?" Major components are called **rocks** — named, owned, status-tracked things that may span multiple modules. Organised into layers (e.g., Product, Platform, Business, Expand). Each rock has: what it is, what's inside it, status (LIVE / PARTIAL / DESIGNED / IDEA / FUTURE), owner, governing ADRs, and active-work pointers. A **mechanical update ritual** is defined alongside the map: which events trigger updates (new ADR, rock status change, ROADMAP restructure, ownership change) so the document doesn't go stale. Sessions that reason about system scope should read SYSTEM_MAP before planning. Offer to run `system-map` after init completes and after any `adr` that changes a rock's status or scope.
 
 **`spec <rock>`** — creates or updates a detailed specification for one rock at `docs/specs/NN-<rock-name>.md`. A rock spec is written when the rock enters active development (ROADMAP task opens), a planning session, or a queued ADR. The spec template has 11 sections: (1) Purpose, (2) Scope (in/out — every out-of-scope item points to where it IS covered), (3) Stakeholders, (4) Requirements (functional + non-functional, each tagged LIVE / PARTIAL / DESIGNED / ROADMAP / IDEA), (5) User journeys / scenarios with happy path + edge paths + failure modes, (6) Technical contract (API surface, data contracts, event contracts), (7) Dependencies (depends-on + depended-on-by + external), (8) Acceptance criteria (objective, testable — feed directly into the testing agent), (9) Forward scope (roadmapped enhancements, IDEAS candidates, identified-not-yet-captured), (10) Open questions (with owner + target date), (11) Change log. Header fields mirror SYSTEM_MAP.md — when status, owner, or governing ADRs change in the spec, they must be updated in the map in the same commit. `docs/specs/00-template.md` is the blank template; it lives in the scaffold from init.
+
+**`spec-harden <rock>`** — a dedicated pressure-testing pass on a completed spec, before any code is written. Distinct from `spec`, which produces the document; `spec-harden` attacks it. Applies five named stress tests in sequence: (1) Pre-mortem — "It's 6 months from now and this component failed spectacularly. What happened?" (2) First Principles — "Strip away the assumptions. What does this component ACTUALLY need to do?" (3) Red Team — "You're a hostile reviewer. What's wrong with this spec?" (4) Inversion — "What would make this component definitely fail? Are we accidentally doing any of those things?" (5) Constraint Removal — "If we removed the 'must integrate with existing system X' constraint, what would we design instead? Is that better?" Each method surfaces a distinct class of problem: missed requirements, false assumptions, logical gaps, failure modes, artificial constraints. Output is a structured findings report: spec issues found, sections requiring revision, open questions added, and a pass/fail verdict — does the spec need a revision cycle before building starts? `spec-harden` is explicitly Step 4 of The Definition Path. It slots between writing the spec (Step 3) and validating cross-doc coherence (Step 5). Offer to run `spec-harden` after every `spec` command that produces a new specification.
 
 **Advanced elicitation** is available in `reason`, `architecture`, `security`, and `adr` discussions. After reasoning, Claude offers named stress-testing methods (Pre-mortem, First Principles, Red Team vs. Blue Team, Inversion, Socratic Questioning, Constraint Removal). See the `reason` mode description above for the full list.
 
@@ -533,7 +536,17 @@ For each component entering development: write a clear spec before a line of cod
 
 ---
 
-**Step 4 — Validate coherence** (`/builder ready-check`)
+**Step 4 — Harden the spec** (`/builder spec-harden <component>`)
+
+A dedicated pressure-testing pass. The spec is attacked, not described. Five stress tests are applied in sequence: Pre-mortem, First Principles, Red Team, Inversion, Constraint Removal. Each finds a different class of problem — missed requirements, false assumptions, logic gaps, failure modes, artificial constraints.
+
+Do not skip this step. The cost of finding a spec problem here is a conversation. The cost of finding it mid-build is a rework cycle. The cost of finding it in production is a crisis.
+
+*Done when:* Findings report produced. Any issues found are resolved in the spec. Spec-harden verdict is Pass.
+
+---
+
+**Step 5 — Validate coherence** (`/builder ready-check`)
 
 Verify that all the docs agree with each other. Architecture principles, roadmap tasks, specs, security requirements — do they tell a consistent story? Does every agent have clear scope? Are dependencies correctly ordered?
 
@@ -541,7 +554,7 @@ Verify that all the docs agree with each other. Architecture principles, roadmap
 
 ---
 
-**Step 5 — Build** (`/builder advance`)
+**Step 6 — Build** (`/builder advance`)
 
 Agents execute against the specs. They know exactly what they're building, what "done" looks like, and what they must NOT build (out-of-scope items are in the spec). No guessing.
 
@@ -549,7 +562,7 @@ Agents execute against the specs. They know exactly what they're building, what 
 
 ---
 
-**Step 6 — Verify against the spec** (`/builder review` + reconciliation)
+**Step 7 — Verify against the spec** (`/builder review` + reconciliation)
 
 Confirm that what was built matches what was agreed. The review panel checks quality. Reconciliation checks completeness — every acceptance criterion from the spec is met.
 
@@ -563,10 +576,10 @@ Confirm that what was built matches what was agreed. The review panel checks qua
 
 ### When to run the Definition Path
 
-- Starting a new project → run all six steps in order
-- Starting a new phase → run Steps 2-4 (re-map, re-spec any new components, re-validate)
-- A new component enters development → run Steps 3-4 at minimum (spec it, then validate coherence before building)
-- Something doesn't feel right mid-build → run Step 4 (`ready-check`) to surface the incoherence
+- Starting a new project → run all seven steps in order
+- Starting a new phase → run Steps 2-5 (re-map, re-spec any new components, harden, re-validate)
+- A new component enters development → run Steps 3-5 at minimum (spec it, harden it, validate coherence before building)
+- Something doesn't feel right mid-build → run Step 5 (`ready-check`) to surface the incoherence
 
 ### In enterprise mode
 
@@ -605,6 +618,7 @@ In enterprise mode, the formal session opening protocol is replaced by conversat
 | "Help me plan [area]" | `planning` — five-activity session for the named module |
 | "Show me the big picture" / "What does our system actually have in it?" / "What's the status of each part?" | `system-map` — creates or updates the overview of all major components with status, owner, and decisions |
 | "Walk me through [component]" / "What is [X] supposed to do exactly?" / "Spec out [component] for me" | `spec <component>` — detailed spec for one component: purpose, scope, requirements, acceptance criteria, open questions |
+| "Is this spec good enough to build from?" / "Challenge this spec" / "What are we missing in this design?" | `spec-harden <component>` — pressure-test the spec: find gaps, false assumptions, failure modes, and artificial constraints before a line of code is written |
 
 ### Output transformation
 
