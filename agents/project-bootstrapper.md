@@ -52,16 +52,22 @@ If the project is empty (no code yet), note that and proceed to Step 0.
 
 ### Step 2a — Understand intent (Fast path)
 
-Present what you found (if anything) and ask the user these questions. Wait for answers before proceeding:
+**If enterprise mode or builder appears non-technical:** Do NOT present all questions at once. Ask ONE question at a time, wait for the answer, then ask the next. This is a conversation, not a form.
 
-1. **What are you building?** (one paragraph — the product, not the tech)
-2. **Who is it for?** (users, customers, stakeholders)
-3. **What's the tech stack?** (or confirm what you detected)
-4. **What exists already?** (confirm your findings from Step 1)
-5. **What's the first thing that needs to work?** (this becomes the Phase 1 interlock deliverable)
-6. **Who else is working on this?** (team size, roles — affects agent count)
+If technical mode, you may present all questions together for efficiency.
 
-After receiving answers, proceed to Step 3 (Derive canonical modules).
+The six questions to cover (order matters — each answer informs the next):
+
+1. **What are you building?** — "Tell me what you want to build. No technical terms needed — just describe what it does and who uses it."
+2. **Who is it for?** — "Who are the people that will use this? Customers? Your team? The public?"
+3. **What's the tech stack?** — In enterprise mode: skip this or ask "Do you have a preference for how it's built, or should I recommend what makes the most sense?" Use what you detected from Step 1 as the default and confirm only if it's unclear.
+4. **What exists already?** — "Have you started anything yet, or is this a fresh start?" (confirm your findings from Step 1)
+5. **What's the first thing that needs to work?** — "If we could only build ONE thing first to prove this works, what would it be?" (this becomes the Phase 1 interlock deliverable)
+6. **Who else is working on this?** — "Is it just you, or is there a team?" (affects agent count)
+
+After all six are answered, proceed to Step 3 (Derive canonical modules).
+
+**Enterprise mode interim summary:** Before moving to Step 3, say: "Got it. Here's what I'm working with: [3-bullet summary of what you understood]. Does that look right? Say 'yes' to keep going or correct anything I got wrong."
 
 ### Step 2b — Structured reasoning session (Deep path)
 

@@ -564,7 +564,8 @@
   <div class="sidebar-nav" id="sidebarNav">
     <span class="nav-group-label">Getting Started</span>
     <div class="nav-section">
-      <a class="nav-link active" href="#overview" onclick="showSection('overview')">Overview</a>
+      <a class="nav-link active" href="#start-here" onclick="showSection('start-here')" style="color:#fff; font-weight:600;">▶ Start Here (New? Begin here)</a>
+      <a class="nav-link" href="#overview" onclick="showSection('overview')">Overview</a>
       <a class="nav-link" href="#features" onclick="showSection('features')">Features</a>
       <a class="nav-link" href="#foundation" onclick="showSection('foundation')">Foundation</a>
     </div>
@@ -614,8 +615,150 @@
 <div class="main">
 <div class="content">
 
+<!-- ==================== SECTION: START HERE ==================== -->
+<div class="section active" id="sec-start-here">
+<h1>Start Here</h1>
+<p class="lead">You don't need to know how to code. You just need to know what you want to build.</p>
+
+<div class="callout callout-green">
+  <div class="callout-title">The only two things you need to know before starting</div>
+  <p style="margin-bottom:8px"><strong>1. Your first command:</strong> <code>/builder help I want to build [describe your idea]</code><br>
+  Describe what you want in plain English. Builder will take it from there.</p>
+  <p style="margin:0"><strong>2. Your rescue command:</strong> <code>/builder help [whatever you're confused about]</code><br>
+  Use this any time you're stuck, lost, or don't know what to do next.</p>
+</div>
+
+<p>Everything else in this documentation exists when you want to go deeper. You don't need to read it before you start. Builder will surface what you need, when you need it.</p>
+
+<h2 id="first-30-minutes">Your First 30 Minutes — Step by Step</h2>
+
+<div style="margin-bottom:28px; display:flex; gap:16px; align-items:flex-start;">
+  <div style="min-width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px; flex-shrink:0; margin-top:2px;">1</div>
+  <div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Open Claude Code and type your first command</div>
+    <p>Start a new conversation. Type this — fill in your own idea:</p>
+    <pre><code>/builder help I want to build [describe your idea here]</code></pre>
+    <p style="margin-bottom:6px"><strong>For example:</strong></p>
+    <ul>
+      <li><code>/builder help I want to build an app to track my school's book loans</code></li>
+      <li><code>/builder help I want to build a website for my family's small business</code></li>
+      <li><code>/builder help I want to build a tool that tracks my soccer team's season stats</code></li>
+      <li><code>/builder help I want to build something that lets our club sign up for events</code></li>
+    </ul>
+    <p>Your idea doesn't need to be perfectly worded. Just describe what it does.</p>
+  </div>
+</div>
+
+<div style="margin-bottom:28px; display:flex; gap:16px; align-items:flex-start;">
+  <div style="min-width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px; flex-shrink:0; margin-top:2px;">2</div>
+  <div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Read Builder's response</div>
+    <p>Builder will respond with:</p>
+    <ul>
+      <li>What it understood about your idea — <strong>read this carefully and correct anything that's wrong</strong></li>
+      <li>What to do next, in plain English</li>
+      <li>The exact command to type next</li>
+    </ul>
+    <p>If it misunderstood something, just say "no, that's not right — what I meant was..." and keep going.</p>
+  </div>
+</div>
+
+<div style="margin-bottom:28px; display:flex; gap:16px; align-items:flex-start;">
+  <div style="min-width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px; flex-shrink:0; margin-top:2px;">3</div>
+  <div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Type the next command it gives you</div>
+    <p>Builder's response ends with the exact command to run next. This is usually <code>/builder init</code>. Type it.</p>
+    <p>Builder will ask you questions — <strong>one at a time</strong>. It won't present a form or a list of 10 things to answer all at once. Each turn is one question. Answer it, and Builder asks the next one. Answer in plain, conversational English:</p>
+    <ul>
+      <li>"I want people to log in with their email address"</li>
+      <li>"It needs to work on phones too"</li>
+      <li>"Only about 20–30 people will use this at first"</li>
+      <li>"I don't need it to accept payments"</li>
+      <li>"I have no idea — what do you recommend?"</li>
+    </ul>
+    <p>That last one is always a valid answer. Builder will suggest the sensible default and explain why.</p>
+  </div>
+</div>
+
+<div style="margin-bottom:28px; display:flex; gap:16px; align-items:flex-start;">
+  <div style="min-width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px; flex-shrink:0; margin-top:2px;">4</div>
+  <div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px;">When asked about mode, say "business leader" or "non-technical"</div>
+    <p>At some point Builder asks: <em>"Who is the primary builder — a developer, or a business or domain leader directing the build?"</em></p>
+    <p>Answer: <strong>"business leader"</strong> or <strong>"non-technical."</strong></p>
+    <p>This activates plain-language mode for everything going forward. Builder will never use technical jargon with you, and will always explain things in terms of your project — not in terms of code.</p>
+  </div>
+</div>
+
+<div style="margin-bottom:28px; display:flex; gap:16px; align-items:flex-start;">
+  <div style="min-width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px; flex-shrink:0; margin-top:2px;">5</div>
+  <div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Review the summary Builder shows you — then approve it</div>
+    <p>Builder will show you a summary of everything it understood: what you're building, who it's for, what the major pieces are, and what gets built first.</p>
+    <p><strong>This is your last chance to fix anything before building starts.</strong> Read it carefully. Then say:</p>
+    <ul>
+      <li><strong>"Yes, that looks right"</strong> — if it's correct</li>
+      <li><strong>"No, [this part] is wrong — what I meant was..."</strong> — if anything needs adjusting</li>
+    </ul>
+    <p>Once you approve, you're set up. Building starts after this.</p>
+  </div>
+</div>
+
+<div class="callout callout-builder">
+  <div class="callout-title">You're now set up</div>
+  <p style="margin:0">The hard part is done. Every session from here starts with you saying what you want — in plain English — and Builder figures out what to do. You approve the work before it's considered done. You never need to read or write code.</p>
+</div>
+
+<h2 id="next-sessions">What Each Session Looks Like From Here</h2>
+<p>After setup, every session is one of three things:</p>
+
+<div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+  <div class="card">
+    <div class="card-title">🔨 Building</div>
+    <div class="card-desc">Say: <em>"What should we build next?"</em> or <em>"Keep going."</em><br><br>Builder picks up where it left off and builds the next piece of your project.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">✅ Checking</div>
+    <div class="card-desc">Say: <em>"Is this ready? Can we show someone?"</em><br><br>Builder reviews the work and reports back in plain language. You decide if it's done.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔧 Fixing</div>
+    <div class="card-desc">Say: <em>"Something's broken"</em> or <em>"This isn't working."</em><br><br>Builder diagnoses the problem and fixes it. You don't need to know what went wrong.</div>
+  </div>
+</div>
+
+<p>You direct which one happens. Builder does the technical work. You approve before anything is considered done.</p>
+
+<h2 id="when-confused">When You Get Confused</h2>
+<p>Type this — any time, in any session:</p>
+<pre><code>/builder help [describe what you're confused about]</code></pre>
+<p>Examples:</p>
+<ul>
+  <li><code>/builder help what just happened and what should I do next?</code></li>
+  <li><code>/builder help what does "spec" mean?</code></li>
+  <li><code>/builder help we haven't touched this in two weeks — where were we?</code></li>
+  <li><code>/builder help how do I show someone what we've built so far?</code></li>
+  <li><code>/builder help something broke and I don't know what</code></li>
+  <li><code>/builder help I feel like we're going in circles — what's the problem?</code></li>
+</ul>
+<p>Builder will explain the situation in plain English, tell you exactly what to do next, and give you the command.</p>
+
+<div class="callout callout-orange">
+  <div class="callout-title">What you will NOT need to do</div>
+  <ul style="margin:0; padding-left:20px;">
+    <li>Write or read any code</li>
+    <li>Understand technical terms like "database," "API," or "deployment" — Builder explains anything you need to know when the time comes</li>
+    <li>Read the rest of this documentation before starting — it's here when you want to go deeper, but you don't need it now</li>
+    <li>Figure out what to build next — Builder tracks what's planned and always knows the next step</li>
+  </ul>
+</div>
+
+<p style="margin-top:32px; color:var(--text-muted); font-size:14px;">Ready to go deeper? See <a href="#enterprise" onclick="showSection('enterprise')">Enterprise Builder Mode</a> for the full picture of how Builder talks to non-technical builders, or <a href="#overview" onclick="showSection('overview')">Overview</a> for a summary of what Builder is.</p>
+
+</div>
+
 <!-- ==================== SECTION: OVERVIEW ==================== -->
-<div class="section active" id="sec-overview">
+<div class="section" id="sec-overview">
 <h1>Builder Operating Model</h1>
 <p class="lead">A structured methodology for AI-native software development. A human builder orchestrates specialized AI agents through explicit modes, shared state docs, and disciplined adaptive guardrails &mdash; producing production-grade software, not vibe code.</p>
 
@@ -1725,6 +1868,43 @@ globs: engine/api/**/*.py
   <li><strong>"Here's what we found"</strong> — issues described in terms of business impact ("this could let unauthorized users access patient records") not technical mechanics ("missing tenant_id scope check")</li>
   <li><strong>"Your decision"</strong> — approve, ask for changes, or flag for discussion</li>
 </ol>
+
+<h2 id="progressive-disclosure">Progressive Disclosure — One Thing at a Time</h2>
+<p>The most common failure in enterprise mode isn't the wrong vocabulary — it's too much information at once. Even in plain language, a wall of text stops a non-technical builder cold.</p>
+
+<p>Enterprise mode is a <strong>conversation</strong>, not a report. Builder applies these rules automatically:</p>
+
+<div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top:16px;">
+  <div class="card">
+    <div class="card-title">One question per turn</div>
+    <div class="card-desc">During setup and planning, Builder asks one question at a time — then waits. The builder sets the pace. Never a form, always a conversation.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">One next step, not a menu</div>
+    <div class="card-desc">The closing suggestion is one option: the single most obvious next action. "Say 'yes' to continue." Not three paths requiring a decision.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Documents stay behind a summary</div>
+    <div class="card-desc">When Builder writes a spec, roadmap, or architecture doc, it shows a 3-bullet summary — not the document. "Here's what it covers. Ready to keep going?" The builder asks "show me" if they want details.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Commentary is off by default</div>
+    <div class="card-desc">Builder doesn't explain why something matters unless asked. It asks the next question or states what was done. The builder says "why?" if they want the reasoning.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Pause-and-check, not options</div>
+    <div class="card-desc">After every significant step: "Does that look right? Say 'yes' to continue or tell me what to change." Not a menu of alternatives.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">~150 word cap per response</div>
+    <div class="card-desc">If a response is approaching 150 words, compress. What's the one thing the builder needs to know right now? Say that. Everything else waits until asked.</div>
+  </div>
+</div>
+
+<div class="callout callout-builder" style="margin-top:24px;">
+  <div class="callout-title">The mental model</div>
+  <p style="margin:0">A chief of staff briefing an executive before a meeting doesn't hand them 10 pages. They say: "You're meeting the claims team. Three things: [three things]. Ready?" Enterprise Builder Mode is the chief of staff — it processes the complexity so the builder doesn't have to.</p>
+</div>
 
 <div class="is-isnot">
   <div class="is-col">
