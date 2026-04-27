@@ -173,16 +173,30 @@ description: <one-line description of ownership scope>
 - Module: <module name> — <description>
 
 ## Does NOT own
-- <what this agent must not touch>
+- <what this agent must not touch, e.g. "frontend code", "database schema", "auth layer">
 
 ## Read first every session
-docs/ARCHITECTURE.md → docs/ROADMAP.md → docs/CURRENT_STATE.md → docs/IDEAS.md
+<!-- ===== STABLE CONTEXT — prompt cache hits here ===== -->
+Shared docs (read once, these are stable):
+- docs/ARCHITECTURE.md — architecture principles and module boundaries
+- docs/CURRENT_STATE.md — what works right now
+
+Module-specific (read only your module's files):
+- docs/ROADMAP.md — filter to tasks assigned to this agent only
+- <list code anchor paths for this module — e.g. src/claims/, api/claims.py>
+- docs/specs/<relevant-rock>.md — spec for rocks this agent owns (if exists)
+<!-- ===== SESSION CONTEXT — do not cache ===== -->
+Current task: check ROADMAP.md for your next assigned task.
+
+Do NOT read: other modules' source code, unrelated specs, or the full codebase.
+A focused agent with scoped context outperforms an agent drowning in irrelevant files.
 
 ## Rules
 1. Update CURRENT_STATE.md on every capability change
-2. Respect module boundaries — if a task crosses into another agent's module, split the task
+2. Respect module boundaries — if a task crosses into another agent's module, split the task or request a cross-module coordination session
 3. New feature ideas → IDEAS.md, not direct implementation
 4. Confirm before destructive actions
+5. Read only your module's code — do not scan the full repo unless explicitly instructed
 ```
 
 Present the proposed agents and ask for feedback.
@@ -211,7 +225,19 @@ For each phase:
 
 Create all files:
 
-1. **`CLAUDE.md`** — project-specific session instructions. Include:
+1. **`CLAUDE.md`** — project-specific session instructions. **Structure for prompt caching: stable content MUST come before dynamic content.** Claude Code re-reads CLAUDE.md at the start of every session; prompt cache hits give a 90% cost reduction on stable content. Put content that never changes (project identity, folder structure, critical rules) at the TOP, above a cache boundary comment. Put content that changes over time (current ADRs, active work) BELOW the boundary. Include:
+   - **Cache boundary structure** — the file must follow this layout:
+     ```
+     <!-- ===== STABLE CONTEXT — prompt cache hits here ===== -->
+     [project summary]
+     [folder structure]
+     [environment variables]
+     [critical rules]
+     [team structure if applicable]
+     <!-- ===== SESSION CONTEXT — update as project evolves ===== -->
+     [current ADRs — add each as: ADR-NNN: <one-line summary>]
+     [active work notes if any]
+     ```
    - One-sentence summary of what the project is
    - Pointer to `docs/` as the canonical source
    - Top-level folder structure

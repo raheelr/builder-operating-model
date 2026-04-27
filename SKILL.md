@@ -389,6 +389,7 @@ Commands that invoke **conversations to shape or evolve foundational docs.** Unl
 /builder system-map           # Create or update the big-picture map of all system rocks
 /builder spec <rock>          # Create or update the detailed spec for one rock
 /builder spec-harden <rock>   # Pressure-test a completed spec before building begins
+/builder token-audit          # Audit token hygiene across the project's sessions and setup
 ```
 
 **`architecture`** — guided conversation about principles, layers, boundaries, tech stack, patterns. Produces or updates `docs/ARCHITECTURE.md`. Use at init and whenever the architectural understanding deepens.
@@ -408,6 +409,17 @@ Commands that invoke **conversations to shape or evolve foundational docs.** Unl
 **`spec <rock>`** — creates or updates a detailed specification for one rock at `docs/specs/NN-<rock-name>.md`. A rock spec is written when the rock enters active development (ROADMAP task opens), a planning session, or a queued ADR. The spec template has 11 sections: (1) Purpose, (2) Scope (in/out — every out-of-scope item points to where it IS covered), (3) Stakeholders, (4) Requirements (functional + non-functional, each tagged LIVE / PARTIAL / DESIGNED / ROADMAP / IDEA), (5) User journeys / scenarios with happy path + edge paths + failure modes, (6) Technical contract (API surface, data contracts, event contracts), (7) Dependencies (depends-on + depended-on-by + external), (8) Acceptance criteria (objective, testable — feed directly into the testing agent), (9) Forward scope (roadmapped enhancements, IDEAS candidates, identified-not-yet-captured), (10) Open questions (with owner + target date), (11) Change log. Header fields mirror SYSTEM_MAP.md — when status, owner, or governing ADRs change in the spec, they must be updated in the map in the same commit. `docs/specs/00-template.md` is the blank template; it lives in the scaffold from init.
 
 **`spec-harden <rock>`** — a dedicated pressure-testing pass on a completed spec, before any code is written. Distinct from `spec`, which produces the document; `spec-harden` attacks it. Applies five named stress tests in sequence: (1) Pre-mortem — "It's 6 months from now and this component failed spectacularly. What happened?" (2) First Principles — "Strip away the assumptions. What does this component ACTUALLY need to do?" (3) Red Team — "You're a hostile reviewer. What's wrong with this spec?" (4) Inversion — "What would make this component definitely fail? Are we accidentally doing any of those things?" (5) Constraint Removal — "If we removed the 'must integrate with existing system X' constraint, what would we design instead? Is that better?" Each method surfaces a distinct class of problem: missed requirements, false assumptions, logical gaps, failure modes, artificial constraints. Output is a structured findings report: spec issues found, sections requiring revision, open questions added, and a pass/fail verdict — does the spec need a revision cycle before building starts? `spec-harden` is explicitly Step 4 of The Definition Path. It slots between writing the spec (Step 3) and validating cross-doc coherence (Step 5). Offer to run `spec-harden` after every `spec` command that produces a new specification.
+
+**`token-audit`** — audits the project's token hygiene across six dimensions, identifies wasteful patterns, and proposes specific fixes. Each dimension is a yes/no check with an automatic fix offer:
+
+1. **Document formats** — are raw PDFs, images, or non-markdown files entering conversations? (Fix: convert referenced documents to markdown; add a guardrail rule to auto-convert on ingest)
+2. **Conversation length** — are sessions running longer than 12–15 turns? (Fix: identify which sessions are sprawling; recommend fresh-session checkpoints in the workflow)
+3. **Model selection** — is Opus being used for tasks that Sonnet or Haiku would handle well? (Fix: review which modes are being run and confirm model routing is set correctly)
+4. **Agent context scope** — are agents reading the full codebase instead of their module? (Fix: update agent "Read first" sections to scope to module-specific files only)
+5. **Prompt caching structure** — are CLAUDE.md and agent files structured with stable content first? (Fix: reorder files to put stable content above the cache boundary marker)
+6. **Plugin/tool load** — are MCP tools or skills loaded that aren't actively used? (Fix: list loaded tools and identify unused ones to remove)
+
+Output: a scorecard (✓ / ⚠ / ✗ per dimension) with specific, actionable fixes for each failure. Offer to apply each fix automatically. In enterprise mode: "I'm going to check that we're not wasting any of our AI budget. One moment." Then present findings as: "Found 2 things to fix. Want me to fix them? Say 'yes' and I'll do both."
 
 **Advanced elicitation** is available in `reason`, `architecture`, `security`, and `adr` discussions. After reasoning, Claude offers named stress-testing methods (Pre-mortem, First Principles, Red Team vs. Blue Team, Inversion, Socratic Questioning, Constraint Removal). See the `reason` mode description above for the full list.
 
@@ -669,6 +681,10 @@ Enterprise mode is a conversation, not a report. Apply these rules in every ente
 
 **6. Compress to the essential.** If a message is approaching 150 words, compress. If a document needs to be shown, summarize it first. What's the one thing the builder needs to know right now? Say that. Everything else waits until asked.
 
+**7. Document conversion interceptor (always active in all modes).** When a builder attaches or references a file that is not plain text or markdown — PDF, Word document, PowerPoint, Excel, image, screenshot — pause before processing and convert it first. In technical mode: "Converting to plain text first — this uses ~20x less context and gives better results." In enterprise mode: just say "cleaning this up first" and do it without explanation. After conversion, process only the clean markdown. Never read raw PDFs, binary formats, or images when text content is all that's needed. A 4,500-word PDF as a raw binary can consume 100,000+ tokens; the same content as markdown uses ~5,000. This single habit has the highest per-action token impact of anything on this list.
+
+**8. Session length advisory (always active in all modes).** After 12–15 conversational turns in a single session, note the length approaching: "This conversation is getting long — at some point soon we should start a fresh session to keep responses sharp." At the natural end of the current task, follow through with a specific prompt: "Good stopping point. For the next task, start a fresh conversation and say '[next command]' — it'll run faster and stay focused." In enterprise mode: "We've been in this chat a while. When you're ready to continue, open a new chat and say 'keep going' — I'll pick up exactly where we left off." Reason: every turn in a conversation re-sends the entire history. A 30-turn conversation means turn 30 transmits turn 1 through 29 as context — the session becomes progressively more expensive per turn and models gradually drift from original instructions as context competes for attention.
+
 **The mental model:** A chief of staff briefing an executive before a meeting doesn't hand them 10 pages. They say: "You're meeting the claims team. Three things: [three things]. Ready?" Builder in enterprise mode is the chief of staff — it processes the complexity so the builder doesn't have to.
 
 ### Review output in enterprise mode
@@ -719,6 +735,18 @@ Or ask me anything.
 - Every suggestion is immediately actionable: the builder responds with "yes," "let's do that," or the natural phrase shown, and Builder executes without re-explaining.
 - Suggestions are specific to what just happened and the current project state — never generic ("you can run any mode").
 - If the builder asks a follow-up question in response to the "What's next?" section, answer it AND repeat the next step suggestions so they can still act on them.
+
+**Model routing — which model tier to use per task:**
+
+Builder routes to the right model automatically. Never use Opus for tasks Sonnet handles well, and never use Sonnet for tasks Haiku handles well. Token costs scale with model tier: Opus costs ~10x Sonnet which costs ~5x Haiku.
+
+| Model | Use for |
+|---|---|
+| **Opus** | `init` deep path (reasoning-heavy), `architecture`, `security`, `adr`, `reason`, `spec-harden`, `debug` (complex multi-system), `review` (adversarial mode) — anything requiring deep architectural judgment or adversarial thinking |
+| **Sonnet** | `advance`, `review` (standard), `planning`, `status`, `triage`, `delta`, `spec`, `design`, `question`, `reshape`, `system-map`, `correct-course`, `retrospective`, `init` fast path — standard execution and analysis |
+| **Haiku** | Simple formatting tasks, quick status lookups, `token-audit` checklist, single-fact questions, document-to-markdown conversion — anything mechanical that doesn't require reasoning |
+
+**Rule:** When in doubt, start with Sonnet. Escalate to Opus only when the task requires genuine architectural judgment, deep adversarial analysis, or multi-system reasoning where a wrong answer is expensive to undo. Drop to Haiku when the task is purely mechanical. In enterprise mode, Builder makes the model choice invisibly — the builder never needs to specify a model.
 
 **Context-aware suggestion logic (what to suggest after each mode):**
 
